@@ -19,10 +19,10 @@ Claude Code reads skills from `.claude/skills/` in your project, or `~/.claude/s
 
 ```bash
 # Install both skills into the current project (.claude/skills/)
-npx skills add YOUR_GITHUB_USERNAME/dx-reporting-skills --all
+npx skills add https://github.com/e1em3ntoDX/dx-reporting-skills-repo.git --all
 
 # Install globally (~/.claude/skills/ — available in all projects)
-npx skills add YOUR_GITHUB_USERNAME/dx-reporting-skills --all --global
+npx skills add https://github.com/e1em3ntoDX/dx-reporting-skills-repo.git --all --global
 ```
 
 ### Option B — Manual copy
@@ -70,11 +70,11 @@ Requires [Node.js 18+](https://nodejs.org). Run from your project root or any di
 
 ```bash
 # Install both skills into the current project
-npx skills add YOUR_GITHUB_USERNAME/dx-reporting-skills --all
+npx skills add https://github.com/e1em3ntoDX/dx-reporting-skills-repo.git --all
 
 # Or install them individually
-npx skills add YOUR_GITHUB_USERNAME/dx-reporting-skills --skill dx-report-designer-skill
-npx skills add YOUR_GITHUB_USERNAME/dx-reporting-skills --skill dx-report-integration-skill
+npx skills add https://github.com/e1em3ntoDX/dx-reporting-skills-repo.git --skill dx-report-designer-skill
+npx skills add https://github.com/e1em3ntoDX/dx-reporting-skills-repo.git --skill dx-report-integration-skill
 ```
 
 This copies the skill folders into `.github/skills/` in the current directory. Copilot picks them up automatically on the next session.
@@ -82,11 +82,9 @@ This copies the skill folders into `.github/skills/` in the current directory. C
 To install globally (available in all projects, not just the current one):
 
 ```bash
-npx skills add YOUR_GITHUB_USERNAME/dx-reporting-skills --all --global
+npx skills add https://github.com/e1em3ntoDX/dx-reporting-skills-repo.git --all --global
 # Installs to ~/.copilot/skills/
 ```
-
-> **Note:** Replace `YOUR_GITHUB_USERNAME/dx-reporting-skills` with the actual repo path once published.
 
 ### Option B — Manual copy
 
@@ -145,7 +143,7 @@ Place the skills in `~/.copilot/skills/` for global use, or use the `npx skills`
 
 ```bash
 # Via npx (recommended)
-npx skills add YOUR_GITHUB_USERNAME/dx-reporting-skills --all --global
+npx skills add https://github.com/e1em3ntoDX/dx-reporting-skills-repo.git --all --global
 
 # Or manually copy
 mkdir -p ~/.copilot/skills
