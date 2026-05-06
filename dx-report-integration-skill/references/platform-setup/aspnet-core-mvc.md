@@ -26,6 +26,8 @@ Microsoft.Web.LibraryManager.Build ← copies icon fonts via libman.json
 
 Right-click `package.json` → **Restore Packages** (or `npm install`).
 
+> **Build order:** Run `npm install` before `dotnet build`. The `libman.json` filesystem provider copies files from `node_modules/` — if packages are not restored first, libman fails with `LIB002 (could not resolve node_modules/...)` and the build stops.
+
 ## bundleconfig.json
 
 ```json
@@ -70,7 +72,40 @@ Right-click `package.json` → **Restore Packages** (or `npm install`).
 ]
 ```
 
-Add a designer bundle section if you also use the End-User Report Designer (add `dx-reportdesigner.css` and `dx-reportdesigner.min.js`).
+If you also include the End-User Report Designer, add a designer bundle. **Important:** `dx-analytics-core.js` must be the first entry in the designer bundle — it must not rely on a separate viewer bundle being loaded first.
+
+```json
+[
+  {
+    "outputFileName": "wwwroot/css/designer.part.bundle.css",
+    "inputFiles": [
+      "node_modules/@devexpress/analytics-core/dist/css/dx-analytics.common.css",
+      "node_modules/@devexpress/analytics-core/dist/css/dx-analytics.light.css",
+      "node_modules/devexpress-reporting/dist/css/dx-querybuilder.css",
+      "node_modules/devexpress-reporting/dist/css/dx-reportdesigner.css"
+    ],
+    "minify": { "enabled": false, "adjustRelativePaths": false }
+  },
+  {
+    "outputFileName": "wwwroot/js/designer.part.bundle.js",
+    "inputFiles": [
+      "node_modules/@devexpress/analytics-core/dist/js/dx-analytics-core.min.js",
+      "node_modules/devexpress-reporting/dist/js/dx-querybuilder.min.js",
+      "node_modules/devexpress-reporting/dist/js/dx-reportdesigner.min.js"
+    ],
+    "minify": { "enabled": false },
+    "sourceMap": false
+  }
+]
+```
+
+The designer page must load the viewer bundle before the designer bundle. Reference order in the view:
+```cshtml
+<link rel="stylesheet" href="~/css/viewer.part.bundle.css" />
+<link rel="stylesheet" href="~/css/designer.part.bundle.css" />
+<script src="~/js/viewer.part.bundle.js"></script>
+<script src="~/js/designer.part.bundle.js"></script>
+```
 
 ## libman.json (icon fonts)
 
@@ -191,6 +226,18 @@ builder.Services.AddScoped<IReportProvider, CustomReportProvider>();
 ```
 
 ## Troubleshooting
+
+- **Razor helper chain renders as plain text** (`Height(...)` or `.Bind(...)` appears literally in the browser): wrap multi-line `@Html.DevExpress()` chains in `@(...)`:
+  ```cshtml
+  @(Html.DevExpress().WebDocumentViewer("DocumentViewer")
+      .Height("calc(100vh - 60px)")
+      .Bind(new SalesReport()))
+  ```
+  Single-line calls do not require the wrapper; multi-line chains always do.
+
+- **`DevExpress.Analytics.Widgets is undefined`**: `dx-analytics-core.js` is not included in the designer bundle, or is loaded after `dx-querybuilder.js`. Ensure `dx-analytics-core.min.js` is the first entry in `designer.part.bundle.js`.
+
+- **`DevExpress is not defined`**: `dx.all.js` (DevExtreme) is missing from `thirdparty.bundle.js` or loads after reporting scripts.
 
 - **Blank viewer / 404 on DXXRDV**: `UseDevExpressControls()` missing from `Program.cs`, or placed after `UseStaticFiles()` — it must come before.
 - **JavaScript errors**: npm not restored, or scripts not registered in correct order (`knockout` before `devextreme`, `thirdparty.bundle.js` before `viewer.part.bundle.js`).

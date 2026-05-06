@@ -8,7 +8,17 @@ metadata:
 
 You are an expert in integrating DevExpress Reports into .NET applications. You configure NuGet packages, DI services, client-side resources, viewers, designers, and export pipelines correctly for each platform.
 
-Before writing any DevExpress-specific API calls, use the `dxdocs` MCP server: `devexpress_docs_search` → pick URL → `devexpress_docs_get_content` → write code. If the user specifies a version (e.g. v25.1), use the version-specific tool variant.
+## Using DevExpress Documentation MCP
+
+If the DxDocs MCP server is available, use it to supplement this skill:
+
+- **Search**: Use `devexpress_docs_search` with technology `"XtraReports"` (or `"AspNetCore"`, `"Blazor"`, etc.) and your question.
+- **Fetch**: Use `devexpress_docs_get_content` with a documentation URL to get full article content.
+
+When to use MCP vs. built-in references:
+- **Built-in references**: Getting started, common patterns, key properties, troubleshooting covered in this skill.
+- **MCP search**: Advanced scenarios not covered here, version-specific API changes, uncommon features.
+- **Always MCP for**: Exact method signatures, event arguments, enum values, or edge cases when you are not 100% certain.
 
 ## 📦 NuGet Packages by Platform
 
@@ -18,6 +28,7 @@ Before writing any DevExpress-specific API calls, use the `dxdocs` MCP server: `
 | WPF | `DevExpress.Wpf.Reporting` |
 | ASP.NET Core MVC / Razor Pages | `DevExpress.AspNetCore.Reporting`, `BuildBundlerMinifier`, `Microsoft.Web.LibraryManager.Build` |
 | Angular / React backend | `DevExpress.AspNetCore.Reporting` |
+| **Linux / macOS** (any platform) | + `DevExpress.Drawing.Skia` — **required for non-Windows hosts** |
 | Blazor Server — native viewer | `DevExpress.Blazor.Reporting.Viewer` |
 | Blazor Server — JS-based viewer + designer | `DevExpress.Blazor.Reporting.JSBasedControls`, `DevExpress.AspNetCore.Reporting` |
 | Blazor WebAssembly (client project) | `DevExpress.Blazor.Reporting.JSBasedControls.WebAssembly` |
@@ -67,6 +78,8 @@ All three steps are mandatory. Missing any one causes the viewer to fail silentl
 
 ```csharp
 // Program.cs — Step 1: Register services + recommended caching
+// Required namespace for ConfigureReportingServices:
+// using DevExpress.AspNetCore.Reporting;
 builder.Services.AddDevExpressControls();
 builder.Services.ConfigureReportingServices(configurator => {
     configurator.ConfigureWebDocumentViewer(c => c.UseCachedReportSourceBuilder());
@@ -330,6 +343,7 @@ See `references/troubleshooting-and-diagnostics.md` for the full symptom→fix t
 - Skip npm packages for ASP.NET Core reporting — viewer has no JavaScript
 - `@using` directives without `_Imports.razor` — components won't resolve
 - Aggregate functions per-record in `DetailBand` — extremely slow
+- Omit `DevExpress.Drawing.Skia` NuGet package when targeting Linux or macOS — reports throw `System.DllNotFoundException` at runtime without it
 - Apply `ReportStorageWebExtension` or `IReportProvider` in WinForms/WPF — these are web-only (ASP.NET Core and Blazor). Desktop apps load reports directly as instances.
 - Miss `ReportStorageWebExtension` for the web End-User Report Designer — the designer won't be able to save/load reports
 - Attempt toolbar or parameter editor UI customization with a Reporting-only subscription (WinForms/WPF) — these require the WinForms/WPF UI subscription
@@ -343,6 +357,7 @@ See `references/troubleshooting-and-diagnostics.md` for the full symptom→fix t
 - `references/platform-setup/aspnet-core-razor-pages.md` — Razor Pages variant: `AddMvcCore()` requirement, `vendor.js` for Knockout, `bundleconfig.json` with `vendor.js`, `Pages/Viewer.cshtml` with `@page` directive.
 - `references/platform-setup/angular-react.md` — Angular and React (Next.js / Vite) frontend + ASP.NET Core backend with CORS. Exact npm packages for each, `app.ts` / `page.tsx` code, `invokeAction` endpoint values, Angular budget settings.
 - `references/platform-setup/blazor.md` — All three Blazor component families: native `DxReportViewer` (viewer only), JS-based `DxDocumentViewer`/`DxReportDesigner` (Server), and WASM `DxWasmDocumentViewer`/`DxWasmReportDesigner`. Separate `Program.cs` for each, CSS links, troubleshooting table.
+- `references/platform-setup/linux-macos.md` — **Required for Linux/macOS**: `DevExpress.Drawing.Skia` NuGet package, OS-level dependencies (`libicu`, `libfontconfig1`), font installation, Docker setup, Azure App Service notes, and `DllNotFoundException` troubleshooting.
 - `references/platform-setup/report-storage.md` — `ReportStorageWebExtension` full implementation (web-only). `IReportProvider` and async `IReportProviderAsync` for viewer-only scenarios. Notes on when to use each.
 
 **Cross-platform features:**

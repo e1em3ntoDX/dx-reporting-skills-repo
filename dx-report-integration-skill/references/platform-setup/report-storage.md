@@ -30,7 +30,7 @@ public class CustomReportStorage : ReportStorageWebExtension {
     public override byte[] GetData(string url) {
         var path = Path.Combine(ReportsFolder, url + ".repx");
         if (!File.Exists(path))
-            throw new FaultException($"Report not found: {url}");
+            throw new InvalidOperationException($"Report not found: {url}");
         return File.ReadAllBytes(path);
     }
 
@@ -71,7 +71,7 @@ public class CustomReportProvider : IReportProvider {
         return id switch {
             "SalesReport"   => new SalesReport(),
             "InvoiceReport" => new InvoiceReport(),
-            _ => throw new FaultException($"Report '{id}' not found.")
+            _ => throw new InvalidOperationException($"Report '{id}' not found.")
         };
     }
 }
@@ -111,7 +111,7 @@ public class CustomReportProviderAsync : IReportProviderAsync {
     public Task<XtraReport> GetReportAsync(string id, ReportProviderContext ctx) {
         XtraReport report = id switch {
             "SalesReport" => new SalesReport(),
-            _ => throw new FaultException($"Report '{id}' not found.")
+            _ => throw new InvalidOperationException($"Report '{id}' not found.")
         };
         return Task.FromResult(report);
     }
@@ -136,6 +136,51 @@ public async Task<IActionResult> Viewer(
     var viewerModel = await modelGenerator.GetModelAsync(
         reportName, WebDocumentViewerController.DefaultUri);
     return View(viewerModel);
+}
+```
+
+## Designer Binding Modes
+
+When binding the End-User Report Designer, choose the binding mode based on your scenario:
+
+| Mode | Syntax | When to use |
+|---|---|---|
+| **URL binding** | `.Bind("ReportName")` | `GetData("ReportName")` must resolve the report; used when the designer loads/saves persisted layouts |
+| **Instance binding** | `.Bind(new SalesReport())` | Quick-start samples, or when no storage is configured yet |
+
+For URL binding, `GetData` must handle both persisted `.repx` files **and** predefined in-memory reports by name:
+
+```csharp
+public override byte[] GetData(string url) {
+    // First: try loading a persisted layout from disk
+    var path = Path.Combine(ReportsFolder, url + ".repx");
+    if (File.Exists(path))
+        return File.ReadAllBytes(path);
+
+    // Second: fall back to predefined report instances
+    XtraReport? report = url switch {
+        "SalesReport"   => new SalesReport(),
+        "InvoiceReport" => new InvoiceReport(),
+        _               => null
+    };
+    if (report != null) {
+        using var ms = new MemoryStream();
+        report.SaveLayoutToXml(ms);
+        return ms.ToArray();
+    }
+
+    throw new InvalidOperationException($"Report not found: {url}");
+}
+
+public override Dictionary<string, string> GetUrls() {
+    // Include both persisted files and predefined names
+    var urls = Directory.EnumerateFiles(ReportsFolder, "*.repx")
+        .ToDictionary(f => Path.GetFileNameWithoutExtension(f),
+                      f => Path.GetFileNameWithoutExtension(f));
+    // Add predefined reports so they appear in the designer's Open dialog
+    urls["SalesReport"]   = "SalesReport";
+    urls["InvoiceReport"] = "InvoiceReport";
+    return urls;
 }
 ```
 

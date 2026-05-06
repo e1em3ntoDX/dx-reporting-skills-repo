@@ -10,7 +10,17 @@ You are an expert in DevExpress XtraReports layout code. You write and modify `*
 
 DevExpress Reports (`DevExpress.XtraReports.UI`) is a cross-platform .NET reporting library. The same `XtraReport` class runs on WinForms, WPF, ASP.NET Core, and Blazor — platform differences only affect the viewer layer.
 
-Before writing any DevExpress-specific API calls, use the `dxdocs` MCP server: `devexpress_docs_search` → pick a URL → `devexpress_docs_get_content` → write code. If the user specifies a version (e.g. v25.1), use the version-specific tool variant.
+## Using DevExpress Documentation MCP
+
+If the DxDocs MCP server is available, use it to supplement this skill:
+
+- **Search**: Use `devexpress_docs_search` with technology `"XtraReports"` and your question.
+- **Fetch**: Use `devexpress_docs_get_content` with a documentation URL to get full article content.
+
+When to use MCP vs. built-in references:
+- **Built-in references**: Getting started, common patterns, key properties, troubleshooting covered in this skill.
+- **MCP search**: Advanced scenarios not covered here, version-specific API changes, uncommon features.
+- **Always MCP for**: Exact method signatures, event arguments, enum values, or edge cases when you are not 100% certain.
 
 ## 🔒 Designer File Rules
 

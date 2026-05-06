@@ -16,6 +16,9 @@
 | 415 Unsupported Media Type | Content type mismatch between client and server | Call `configurator.UseRequestContentType(...)` to align |
 | CORS errors in browser (Angular/React) | CORS policy not configured or `UseCors()` called in wrong position | See CORS section below |
 | Version mismatch warnings | npm package versions don't match NuGet versions | Match all versions to same `25.x`; enable Development Mode to see details |
+| Razor helper chain renders as plain text in the browser | Multi-line `@Html.DevExpress()` chain not wrapped in `@(...)` | Wrap in `@(Html.DevExpress()...Bind(...))` — see ASP.NET Core MVC setup |
+| Designer fails: "Report not found: ReportName" with URL binding | `GetData()` doesn't handle in-memory/predefined reports by name | Extend `GetData` to resolve known report names as well as `.repx` files |
+| `DevExpress.Analytics.Widgets is undefined` | `dx-analytics-core.js` loaded after `dx-querybuilder.js` or missing from designer bundle | Put `dx-analytics-core.min.js` as first entry in `designer.part.bundle.js` |
 | Language dropdown empty in localization editor | `InvariantGlobalization = true` in runtime config | Set `InvariantGlobalization` to `false` in `runtimeconfig.json` |
 
 ---
