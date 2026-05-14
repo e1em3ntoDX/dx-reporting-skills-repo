@@ -15,17 +15,7 @@ Both skills target **DevExpress v25.2**.
 
 Claude Code reads skills from `.claude/skills/` in your project, or `~/.claude/skills/` globally.
 
-### Option A — `npx skills` CLI (recommended)
-
-```bash
-# Install both skills into the current project (.claude/skills/)
-npx skills add https://github.com/e1em3ntoDX/dx-reporting-skills-repo.git --all
-
-# Install globally (~/.claude/skills/ — available in all projects)
-npx skills add https://github.com/e1em3ntoDX/dx-reporting-skills-repo.git --all --global
-```
-
-### Option B — Manual copy
+### Install by copying the skill folders
 
 ```bash
 # Project-level (only active in this repo)
@@ -47,7 +37,7 @@ Skills activate automatically — no commands or flags needed. Just ask Claude C
 
 Skills are uploaded once in Settings and apply to all future conversations.
 
-1. Download the `.skill` files from [`dist/`](./dist/):
+1. Download the `.skill` files from the `dist/` folder:
    - [`dist/dx-report-designer-skill.skill`](./dist/dx-report-designer-skill.skill)
    - [`dist/dx-report-integration-skill.skill`](./dist/dx-report-integration-skill.skill)
    - Or download both at once: [`dist/dx-reporting-skills-bundle.zip`](./dist/dx-reporting-skills-bundle.zip), then unzip.
@@ -64,29 +54,7 @@ That's it. Claude picks up the skills automatically on relevant questions — no
 
 GitHub Copilot uses the skills as files in your repository's `.github/skills/` directory (or globally in `~/.copilot/skills/`). The skills activate automatically when Copilot agent mode handles a relevant question.
 
-### Option A — `npx skills` CLI (recommended, works everywhere)
-
-Requires [Node.js 18+](https://nodejs.org). Run from your project root or any directory:
-
-```bash
-# Install both skills into the current project
-npx skills add https://github.com/e1em3ntoDX/dx-reporting-skills-repo.git --all
-
-# Or install them individually
-npx skills add https://github.com/e1em3ntoDX/dx-reporting-skills-repo.git --skill dx-report-designer-skill
-npx skills add https://github.com/e1em3ntoDX/dx-reporting-skills-repo.git --skill dx-report-integration-skill
-```
-
-This copies the skill folders into `.github/skills/` in the current directory. Copilot picks them up automatically on the next session.
-
-To install globally (available in all projects, not just the current one):
-
-```bash
-npx skills add https://github.com/e1em3ntoDX/dx-reporting-skills-repo.git --all --global
-# Installs to ~/.copilot/skills/
-```
-
-### Option B — Manual copy
+### Install by copying the skill folders
 
 Clone or download this repo, then copy the skill folders into your project:
 
@@ -111,7 +79,7 @@ For a **global install** (available across all projects):
 
 ### VS Code
 
-After installing the skill files (either method above), enable skill discovery:
+After installing the skill files, enable skill discovery:
 
 1. Open **Settings** (`Ctrl+,` / `Cmd+,`).
 2. Search for `chat.agent.skills`.
@@ -139,13 +107,9 @@ Rider supports GitHub Copilot via the [GitHub Copilot plugin](https://plugins.je
 
 ### GitHub Copilot CLI
 
-Place the skills in `~/.copilot/skills/` for global use, or use the `npx skills` CLI (Option A above):
+Place the skills in `~/.copilot/skills/` for global use:
 
 ```bash
-# Via npx (recommended)
-npx skills add https://github.com/e1em3ntoDX/dx-reporting-skills-repo.git --all --global
-
-# Or manually copy
 mkdir -p ~/.copilot/skills
 cp -r dx-report-designer-skill    ~/.copilot/skills/
 cp -r dx-report-integration-skill ~/.copilot/skills/
